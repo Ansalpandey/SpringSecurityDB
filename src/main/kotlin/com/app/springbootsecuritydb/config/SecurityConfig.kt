@@ -27,6 +27,7 @@ class SecurityConfig(
         return BCryptPasswordEncoder(13)
     }
 
+
     @Bean
     @Throws(Exception::class)
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -37,6 +38,9 @@ class SecurityConfig(
             .authorizeHttpRequests {
                 it.requestMatchers("/api/user/register", "/api/user/login").permitAll().anyRequest().authenticated()
             }
+            .oauth2Login(
+                Customizer.withDefaults()
+            )
             .httpBasic(
                 Customizer.withDefaults()
             )
