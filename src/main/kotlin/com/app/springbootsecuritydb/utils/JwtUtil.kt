@@ -24,7 +24,7 @@ class JwtUtil {
 
     fun validateToken(token: String): Boolean {
         return try {
-            Jwts.parser().setSigningKey(secretKey).build().parse(token)
+            Jwts.parser().verifyWith(secretKey).build().parse(token)
             true
         } catch (e: Exception) {
             false
@@ -32,6 +32,6 @@ class JwtUtil {
     }
 
     fun extractUsername(token: String): String? {
-        return Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token).body["username"] as String?
+        return Jwts.parser().verifyWith(secretKey).build().parseClaimsJws(token).body["username"] as String?
     }
 }
