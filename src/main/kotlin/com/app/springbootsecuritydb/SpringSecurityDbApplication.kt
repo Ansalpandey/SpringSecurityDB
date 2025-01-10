@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class SpringSecurityDbApplication
 
 fun main(args: Array<String>) {
-    runApplication<SpringSecurityDbApplication>(*args)
+  runApplication<SpringSecurityDbApplication>(*args)
 }

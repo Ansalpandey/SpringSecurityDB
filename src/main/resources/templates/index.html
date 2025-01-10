@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring Boot Security JWT Authentication Example</title>
+    <link rel="icon" type="image/png" href="/icon.png">
+    <style>
+        /* Hide all content initially */
+        body {
+            display: none;
+        }
+    </style>
+    <script>
+        async function login(event) {
+            event.preventDefault();
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            // Make login API call
+            const response = await fetch("http://localhost:8080/api/user/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({username, password})
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const token = data.token;
+                const user = data.user;
+
+                // Store token in localStorage
+                localStorage.setItem("authToken", token);
+
+                // Show logged-in user's name
+                document.getElementById("loggedInUser").innerText = `Welcome, ${user.name}`;
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("welcomeMessage").style.display = "block";
+            } else {
+                alert("Login failed! Please check your credentials.");
+            }
+        }
+
+        async function checkAuthToken() {
+            const token = localStorage.getItem("authToken");
+
+            if (token) {
+                // Validate token and fetch user details
+                const response = await fetch("http://localhost:8080/api/user/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const user = await response.json();
+
+                    // Show the welcome message
+                    document.getElementById("loggedInUser").innerText = `Welcome, ${user.name}`;
+                    document.getElementById("loginForm").style.display = "none";
+                    document.getElementById("welcomeMessage").style.display = "block";
+                } else {
+                    // If the token is invalid, clear it from localStorage
+                    localStorage.removeItem("authToken");
+                    document.getElementById("loginForm").style.display = "block";
+                }
+            } else {
+                // Show login form if no token is found
+                document.getElementById("loginForm").style.display = "block";
+            }
+
+            // Show the page after deciding what to display
+            document.body.style.display = "block";
+        }
+
+        // Check auth token when the page loads
+        window.onload = checkAuthToken;
+    </script>
+</head>
+<body>
+<h1>Login Page</h1>
+
+<div id="loginForm" style="display: none;">
+    <form onsubmit="login(event)" autocomplete="on">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+<div id="welcomeMessage" style="display: none;">
+    <h2 id="loggedInUser"></h2>
+</div>
+</body>
+</html>
