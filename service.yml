@@ -1,15 +1,8 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: springbootsecuritydb
-  namespace: springbootsecuritydb
-  labels:
-    app: springbootsecuritydb
-spec:
-    selector:
-        app: springbootsecuritydb
-    ports:
-      - protocol: TCP
-        port: 8080
-        targetPort: 8080
-    type: LoadBalancer
+scrape_configs:
+  - job_name: 'SpringBootSecurityDBMetrics'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 3s
+    static_configs:
+      - targets: ['host.docker.internal:8080']
+        labels:
+          application: 'springbootsecuritydb'
